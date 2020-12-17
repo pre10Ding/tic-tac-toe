@@ -1,2 +1,2 @@
 # tic-tac-toe
-command line tic tac toe game written in Ruby
+Run main.rb in command line!
