@@ -7,13 +7,13 @@ class Interface
   def initialize(player1,player2)
     @players = [player1,player2]
     @turn = 0
-    self.display(@players)
+    display(@players)
   end
 
   def do_turn
-    @players[ (@turn % 2) ].add_move(self.prompt)
-    self.display(@players)
-    if self.win?(@players[ (@turn % 2) ].player_moves) #check if game end
+    @players[ (@turn % 2) ].add_move(prompt)
+    display(@players)
+    if win?(@players[ (@turn % 2) ].player_moves) #check if game end
       puts "Player #{@turn % 2 + 1} wins!"
       puts "Resetting game...\n\n\n"
       return false
@@ -29,7 +29,7 @@ class Interface
     while(true) #validation loop
       puts "Player #{@turn % 2 + 1}, please enter your move. (ie. \"C1\")"
       player_input = gets.chomp
-      break if self.validate_input(@players,player_input)
+      break if validate_input(@players,player_input)
       puts "Invalid input!"
     end
 
