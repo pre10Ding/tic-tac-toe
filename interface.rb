@@ -1,4 +1,4 @@
-
+require "./tictactoe.rb" 
 #Tracks turns and gets user input
 class Interface
   

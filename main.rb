@@ -1,4 +1,3 @@
-require "./tictactoe.rb" 
 require "./interface.rb"
 require "./player.rb"
 
