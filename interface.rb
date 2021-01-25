@@ -4,11 +4,12 @@ class Interface
   
   include TicTacToe
 
-  def initialize(player1,player2)
-    @players = [player1,player2]
-    @turn = 0
-    display(@players)
+  def initialize(player1, player2, turn = 0)
+    @players = [player1, player2]
+    @turn = turn
   end
+
+  attr_reader :players
 
   def do_turn
     @players[ (@turn % 2) ].add_move(prompt)
