@@ -2,6 +2,8 @@
 
 # tic-tac-toe specific behaviors for player/AI
 module TicTacToe
+  private
+
   def display(players)
     game_board_state = {}
     game_symbols = ["X","O"]
@@ -26,9 +28,7 @@ module TicTacToe
     puts "  1 2 3" + game_board_with_ascii.join
 
   end
-
-  private
-
+  
   VALID_INPUTS = %w[A1 A2 A3 B1 B2 B3 C1 C2 C3]
   #other winning pattern would be just 3 of the same letter/number
   DIAGONAL_WINNING_PATTERNS = [%w[A1 B2 C3],%w[C1 B2 A3]]
