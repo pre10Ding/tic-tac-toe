@@ -22,7 +22,6 @@ describe Interface do
     linear_winning_patterns = [%w[A1 B1 C1], %w[A3 B3 C3], %w[A1 A2 A3], %w[B1 B2 B3]]
     linear_winning_patterns.each do |pattern|
       context "when the line win pattern #{pattern.join('-')} is completed by Player 1" do
-
         it 'returns false to signal that the game should not continue' do
           allow(player1).to receive(:player_moves).and_return(pattern)
           expect(win_condition.do_turn).to be false
@@ -33,7 +32,6 @@ describe Interface do
     diagonal_winning_patterns = [%w[A1 B2 C3], %w[C1 B2 A3]]
     diagonal_winning_patterns.each do |pattern|
       context "when the diagonal win pattern #{pattern.join('-')} is completed by Player 1" do
-
         it 'returns false to signal that the game should not continue' do
           allow(player1).to receive(:player_moves).and_return(pattern)
           expect(win_condition.do_turn).to be false
@@ -110,17 +108,19 @@ describe Interface do
       subject(:game_input) { described_class.new(player1, player2) }
 
       before do
-        allow(game_input).to receive(:gets).and_return('C1')
-        allow(player1).to receive(:player_moves).and_return(['A1', 'A2'])
-        allow(player2).to receive(:player_moves).and_return(['B1', 'C2'])
+        allow(player1).to receive(:player_moves).and_return([])
+        allow(player2).to receive(:player_moves).and_return([])
         allow(game_input).to receive(:display)
         allow(game_input).to receive(:win?).and_return(false)
 
       end
-
-      it 'the input is validated' do
-        expect(player1).to receive(:add_move).with('C1').once
-        game_input.do_turn
+      VALID_INPUTS = %w[A1 A2 A3 B1 B2 B3 C1 C2 C3]
+      VALID_INPUTS.each do |input|
+        it "the #{input} input is validated" do
+          allow(game_input).to receive(:gets).and_return(input)
+          expect(player1).to receive(:add_move).with(input).once
+          game_input.do_turn
+        end
       end
     end
 
