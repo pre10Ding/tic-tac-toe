@@ -1,34 +1,7 @@
-#tic-tac-toe specific behaviors for player/AI
+# frozen_string_literal: true
 
-module TicTacToe 
-  
-  private
-  VALID_INPUTS = %w[A1 A2 A3 B1 B2 B3 C1 C2 C3]
-  #other winning pattern would be just 3 of the same letter/number
-  DIAGONAL_WINNING_PATTERNS = [%w[A1 B2 C3],%w[C1 B2 A3]]
-  def win?(player_moves) #return 1 if the new move won the game, return 0 otherwise
-    #winning check logic
-    #check diagonal winning patterns
-    pattern_matched = false
-    DIAGONAL_WINNING_PATTERNS.each do |pattern|
-      pattern_matched = true
-      pattern.each do |move|
-        unless player_moves.include?(move)
-          pattern_matched = false
-          break
-        end
-      end
-    end
-
-    #check triple occurences (verticle and horizontal winning patterns)
-    moves_tallied = player_moves.flatten.join.chars.tally
-
-    if moves_tallied.values.any?(3) || pattern_matched
-      return 1
-    end
-
-  end
-
+# tic-tac-toe specific behaviors for player/AI
+module TicTacToe
   def display(players)
     game_board_state = {}
     game_symbols = ["X","O"]
@@ -52,6 +25,32 @@ module TicTacToe
     end
     puts "  1 2 3" + game_board_with_ascii.join
 
+  end
+
+  private
+
+  VALID_INPUTS = %w[A1 A2 A3 B1 B2 B3 C1 C2 C3]
+  #other winning pattern would be just 3 of the same letter/number
+  DIAGONAL_WINNING_PATTERNS = [%w[A1 B2 C3],%w[C1 B2 A3]]
+  def win?(player_moves) #return 1 if the new move won the game, return 0 otherwise
+    #winning check logic
+    #check diagonal winning patterns
+    pattern_matched = false
+    DIAGONAL_WINNING_PATTERNS.each do |pattern|
+      pattern_matched = true
+      pattern.each do |move|
+        unless player_moves.include?(move)
+          pattern_matched = false
+          break
+        end
+      end
+      break if pattern_matched
+    end
+
+    #check triple occurences (verticle and horizontal winning patterns)
+    moves_tallied = player_moves.flatten.join.chars.tally
+
+    1 if moves_tallied.values.any?(3) || pattern_matched
   end
 
   def validate_input(players,input) 
