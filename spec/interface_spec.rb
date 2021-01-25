@@ -11,36 +11,33 @@ describe Interface do
   describe '#do_turn' do
     # Public Script Method
     # Test the win condition if statement
+    subject(:win_condition) { described_class.new(player1, player2, 0) }
 
-    context 'when the line win pattern is completed by Player 1' do
-      subject(:win_line) { described_class.new(player1, player2, 0) }
+    before(:each) do
+      allow(player1).to receive(:add_move)
+      allow(win_condition).to receive(:display)
+      allow(win_condition).to receive(:prompt)
+    end
 
-      before do
-        allow(player1).to receive(:add_move)
-        allow(win_line).to receive(:display)
-        allow(win_line).to receive(:prompt)
-        allow(player1).to receive(:player_moves).and_return(%w[A1 A2 A3])
-      end
+    linear_winning_patterns = [%w[A1 B1 C1], %w[A3 B3 C3], %w[A1 A2 A3], %w[B1 B2 B3]]
+    linear_winning_patterns.each do |pattern|
+      context "when the line win pattern #{pattern.join('-')} is completed by Player 1" do
 
-      it 'returns false to signal that the game should not continue' do
-        p player1.player_moves
-        expect(win_line.do_turn).to be false
+        it 'returns false to signal that the game should not continue' do
+          allow(player1).to receive(:player_moves).and_return(pattern)
+          expect(win_condition.do_turn).to be false
+        end
       end
     end
 
-    context 'when the diagonal win pattern is completed by Player 1' do
-      subject(:win_diagonal) { described_class.new(player1, player2, 0) }
+    diagonal_winning_patterns = [%w[A1 B2 C3], %w[C1 B2 A3]]
+    diagonal_winning_patterns.each do |pattern|
+      context "when the diagonal win pattern #{pattern.join('-')} is completed by Player 1" do
 
-      before do
-        allow(player1).to receive(:add_move)
-        allow(win_diagonal).to receive(:display)
-        allow(win_diagonal).to receive(:prompt)
-        allow(player1).to receive(:player_moves).and_return(%w[A1 B2 C3])
-      end
-
-      it 'returns false to signal that the game should not continue' do
-        p player1.player_moves
-        expect(win_diagonal.do_turn).to be false
+        it 'returns false to signal that the game should not continue' do
+          allow(player1).to receive(:player_moves).and_return(pattern)
+          expect(win_condition.do_turn).to be false
+        end
       end
     end
 
@@ -103,26 +100,67 @@ describe Interface do
         return_value = turn_move.do_turn
         expect(return_value).to be(1)
       end
+
+      it 'changes the turn counter by 1' do
+        expect{ turn_move.do_turn }.to change { turn_move.instance_variable_get(:@turn) }.by(1)
+      end
     end
-  end
 
-  describe '#prompt' do
-    # Located inside do_turn (Public Script Method)
-
-    # Outgoing command
-    # Looping script method
-
-    context 'when the player enters an input' do
-      subject(:prompt_move) { described_class.new(player1, player2) }
+    context 'when the player enters a valid input' do
+      subject(:game_input) { described_class.new(player1, player2) }
 
       before do
-        allow($stdin).to receive(:gets).and_return('C1')
+        allow(game_input).to receive(:gets).and_return('C1')
+        allow(player1).to receive(:player_moves).and_return(['A1', 'A2'])
+        allow(player2).to receive(:player_moves).and_return(['B1', 'C2'])
+        allow(game_input).to receive(:display)
+        allow(game_input).to receive(:win?).and_return(false)
+
       end
 
-      it 'sends the input to be validated by #validate_input' do
-        expect(prompt_move).to receive(:validate_input)
-        prompt_move.prompt
+      it 'the input is validated' do
+        expect(player1).to receive(:add_move).with('C1').once
+        game_input.do_turn
       end
     end
+
+    context 'when the player enters a invalid input' do
+      subject(:game_input) { described_class.new(player1, player2) }
+
+      before do
+        allow(game_input).to receive(:gets).and_return('H1', 'C1')
+        allow(player1).to receive(:player_moves).and_return(['A1', 'A2'])
+        allow(player2).to receive(:player_moves).and_return(['B1', 'C2'])
+        allow(game_input).to receive(:display)
+        allow(game_input).to receive(:win?).and_return(false)
+
+      end
+
+      it 'the input is validated' do
+        expect(player1).not_to receive(:add_move).with('H1')
+        expect(player1).to receive(:add_move).with('C1').once
+        game_input.do_turn
+      end
+    end
+
+    context 'when the player enters a input that was already made' do
+      subject(:game_input) { described_class.new(player1, player2) }
+
+      before do
+        allow(game_input).to receive(:gets).and_return('A1', 'C1')
+        allow(player1).to receive(:player_moves).and_return(['A1', 'A2'])
+        allow(player2).to receive(:player_moves).and_return(['B1', 'C2'])
+        allow(game_input).to receive(:display)
+        allow(game_input).to receive(:win?).and_return(false)
+
+      end
+
+      it 'the input is validated' do
+        expect(player1).not_to receive(:add_move).with('A1')
+        expect(player1).to receive(:add_move).with('C1').once
+        game_input.do_turn
+      end
+    end
+
   end
 end
